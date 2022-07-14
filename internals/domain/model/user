@@ -1,0 +1,31 @@
+package model
+
+import "github.com/ulid/ulid"
+
+var (
+	ErrUserNameEmpty  = errors.New("user name is empty")
+	ErrUserEmailEmpty = errors.New("user email is empty")
+)
+
+type User struct {
+	ID        string     `json:"id"`
+	Name      string     `json:"name"`
+	Email     string     `json:"email"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	DeletedAt *time.Time `json:"deletedAt"`
+}
+
+func NewUser(name, email string) (*User, error) {
+	if name == "" {
+		return nil, ErrUserNameEmpty
+	}
+	if email == "" {
+		return nil, ErrUserEmailEmpty
+	}
+	return &User{
+		ID:    ulid.New().String(),
+		Name:  name,
+		Email: email,
+	}, nil
+}
