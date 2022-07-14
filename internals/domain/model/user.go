@@ -1,6 +1,11 @@
 package model
 
-import "github.com/ulid/ulid"
+import (
+	"errors"
+	"time"
+
+	"github.com/koba1108/go-mongodb/internals/helper"
+)
 
 var (
 	ErrUserNameEmpty  = errors.New("user name is empty")
@@ -24,8 +29,11 @@ func NewUser(name, email string) (*User, error) {
 		return nil, ErrUserEmailEmpty
 	}
 	return &User{
-		ID:    ulid.New().String(),
-		Name:  name,
-		Email: email,
+		ID:        helper.NewULID().String(),
+		Name:      name,
+		Email:     email,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		DeletedAt: nil,
 	}, nil
 }

@@ -1,2 +1,6 @@
+github.com/Songmu/flextime v0.1.0 h1:sss5IALl84LbvU/cS5D1cKNd5ffT94N2BZwC+esgAJI=
+github.com/Songmu/flextime v0.1.0/go.mod h1:ofUSZ/qj7f1BfQQ6rEH4ovewJ0SZmLOjBF1xa8iE87Q=
+github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
+github.com/oklog/ulid v1.3.1/go.mod h1:CirwcVhetQ6Lv90oh/F+FBtV6XMibvdAFo93nm5qn4U=
 github.com/ulid/ulid v2.3.0+incompatible h1:MA7qVtQx6ROKR5+dknZcfpRfH3KIqzY8WALnh9xOEnU=
 github.com/ulid/ulid v2.3.0+incompatible/go.mod h1:IaYfGQR1tvBb+aCX63yy73oOnT9QUM1xCjK0H4IiGjY=
