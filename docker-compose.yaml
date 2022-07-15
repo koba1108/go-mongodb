@@ -1,0 +1,55 @@
+version: '3.7'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/go.Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    ports:
+      - "5000:5000"
+    restart: always
+    tty: true
+    environment:
+      ENV: dev
+      PORT: 5000
+      MONGODB_URI: "mongodb://mongo:27017"
+      MONGODB_DATABASE: "public"
+    command: sh ./scripts/api.sh
+    depends_on:
+      - mongo
+    networks:
+      - app-net
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: public
+    networks:
+      - app-net
+      - mongo-express
+
+  mongo-express:
+    image: mongo-express:1.0.0-alpha.4
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+    depends_on:
+      - mongo
+    networks:
+      - mongo-express
+
+networks:
+  app-net:
+    driver: bridge
+  mongo-express:
+    driver: bridge

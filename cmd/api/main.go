@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/koba1108/go-mongodb/internals/client"
 	"github.com/koba1108/go-mongodb/internals/handler"
 	"github.com/koba1108/go-mongodb/internals/infrastructure/database"
@@ -9,8 +11,7 @@ import (
 )
 
 func main() {
-	// mongodb, err := client.NewMongoDBClient(os.Getenv("MONGODB_DATABASE"), os.Getenv("MONGODB_URI"))
-	mongodb, err := client.NewMongoDBClient("MONGODB_DATABASE", "mongodb://localhost:27017")
+	mongodb, err := client.NewMongoDBClient(os.Getenv("MONGODB_DATABASE"), os.Getenv("MONGODB_URI"))
 	if err != nil {
 		panic(err)
 	}
@@ -25,5 +26,5 @@ func main() {
 		apiV1User.GET("/", userHandler.List)
 		apiV1User.GET("/:userId", userHandler.GetByID)
 	}
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }
