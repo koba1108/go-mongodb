@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/koba1108/go-mongodb/internals/usecase"
@@ -21,6 +22,7 @@ type userHandler struct {
 }
 
 func (uh *userHandler) List(c echo.Context) error {
+	log.Println("List")
 	users, err := uh.userUsecase.FindAll(c.Request().Context())
 	if err != nil {
 		return err

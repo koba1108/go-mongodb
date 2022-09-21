@@ -20,10 +20,11 @@ func main() {
 	userHandler := handler.NewUserHandler(userUsecase)
 
 	e := echo.New()
+	e.Debug = true
 	apiV1 := e.Group("/api/v1")
-	apiV1User := apiV1.Group("users")
+	apiV1User := apiV1.Group("/users")
 	{
-		apiV1User.GET("/", userHandler.List)
+		apiV1User.GET("", userHandler.List)
 		apiV1User.GET("/:userId", userHandler.GetByID)
 	}
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
