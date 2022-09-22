@@ -6,7 +6,6 @@ import (
 	"github.com/koba1108/go-mongodb/internals/domain/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
 )
 
 type playerRepository struct {
@@ -89,10 +88,6 @@ func (pr *playerRepository) FindByIdWithVideos(ctx context.Context, playerId str
 	cur, err := pr.tbl.Aggregate(ctx, mongo.Pipeline{matchStage, lookupStage})
 	if err != nil {
 		return nil, err
-	}
-	for cur.Next(ctx) {
-		log.Println(cur.Current.String())
-		break
 	}
 	var playerVideos []*model.PlayerWithVideos
 	if err = cur.All(ctx, &playerVideos); err != nil {
