@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/koba1108/go-mongodb/internals/domain/model"
 	"github.com/koba1108/go-mongodb/internals/domain/repository"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"net/http"
 )
 

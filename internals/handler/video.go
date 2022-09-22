@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/koba1108/go-mongodb/internals/usecase"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type VideoHandler interface {

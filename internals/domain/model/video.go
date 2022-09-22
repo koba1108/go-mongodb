@@ -20,16 +20,16 @@ var (
 )
 
 type Video struct {
-	ID          string     `json:"id"`
-	PlayerID    string     `json:"playerId"`
-	ExternalID  string     `json:"externalId"`
-	Name        string     `json:"name"`
-	Description string     `json:"description"`
-	UploadDate  time.Time  `json:"uploadDate"`
-	URL         string     `json:"url"`
-	CreatedAt   time.Time  `json:"createdAt"`
-	UpdatedAt   time.Time  `json:"updatedAt"`
-	DeletedAt   *time.Time `json:"deletedAt"`
+	ID          string     `json:"id" bson:"id"`
+	PlayerID    string     `json:"playerId" bson:"playerId"`
+	ExternalID  string     `json:"externalId" bson:"externalId"`
+	Name        string     `json:"name" bson:"name"`
+	Description string     `json:"description" bson:"description"`
+	UploadDate  time.Time  `json:"uploadDate" bson:"uploadDate"`
+	URL         string     `json:"url" bson:"url"`
+	CreatedAt   time.Time  `json:"createdAt" bson:"createdAt"`
+	UpdatedAt   time.Time  `json:"updatedAt" bson:"updatedAt"`
+	DeletedAt   *time.Time `json:"deletedAt" bson:"deletedAt"`
 }
 
 func NewVideo(playerId, externalId, name, description, uploadDateStr, url string) (*Video, error) {

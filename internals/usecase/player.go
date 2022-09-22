@@ -8,6 +8,7 @@ import (
 
 type PlayerUsecase interface {
 	FindByID(ctx context.Context, id string) (*model.Player, error)
+	FindByIdWithVideos(ctx context.Context, id string, limit, offset int, sortKey string, isAsc bool) ([]*model.PlayerWithVideos, error)
 	FindAll(ctx context.Context) ([]*model.Player, error)
 	Create(ctx context.Context, name, officialSiteUrl string) (*model.Player, error)
 	Update(ctx context.Context, id string, name, officialSiteUrl *string) (*model.Player, error)
@@ -24,6 +25,10 @@ type playerUsecase struct {
 
 func (pu *playerUsecase) FindByID(ctx context.Context, id string) (*model.Player, error) {
 	return pu.playerRepository.FindByID(ctx, id)
+}
+
+func (pu *playerUsecase) FindByIdWithVideos(ctx context.Context, id string, limit, offset int, sortKey string, isAsc bool) ([]*model.PlayerWithVideos, error) {
+	return pu.playerRepository.FindByIdWithVideos(ctx, id, limit, offset, sortKey, model.OrderByFromBool(isAsc))
 }
 
 func (pu *playerUsecase) FindAll(ctx context.Context) ([]*model.Player, error) {

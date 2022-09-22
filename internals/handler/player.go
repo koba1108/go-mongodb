@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/koba1108/go-mongodb/internals/usecase"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type PlayerHandler interface {
@@ -32,7 +32,35 @@ func (ph *playerHandler) List(c echo.Context) error {
 }
 
 func (ph *playerHandler) GetByID(c echo.Context) error {
-	player, err := ph.playerUsecase.FindByID(c.Request().Context(), c.Param("id"))
+	var req struct {
+		ID         string `param:"id" binding:"required"`
+		WithVideos bool   `query:"withVideos"`
+		Limit      int    `query:"limit"`
+		Offset     int    `query:"offset"`
+		SortKey    string `query:"sortKey"`
+		IsAsc      bool   `query:"isAsc"`
+	}
+	if err := c.Bind(&req); err != nil {
+		return err
+	}
+	if req.WithVideos {
+		if req.Limit == 0 {
+			req.Limit = 10
+		}
+		if req.Offset == 0 {
+			req.Offset = 0
+		}
+		if req.SortKey == "" {
+			req.SortKey = "id"
+		}
+		res, err := ph.playerUsecase.FindByIdWithVideos(c.Request().Context(), req.ID, req.Limit, req.Offset, req.SortKey, req.IsAsc)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, res)
+	}
+
+	player, err := ph.playerUsecase.FindByID(c.Request().Context(), req.ID)
 	if err != nil {
 		return err
 	}

@@ -22,34 +22,33 @@ func NewPlayerRepository(db *mongo.Database) *playerRepository {
 	}
 }
 
-func (vr *playerRepository) Create(ctx context.Context, player *model.Player) (*model.Player, error) {
-	_, err := vr.tbl.InsertOne(ctx, player)
+func (pr *playerRepository) Create(ctx context.Context, player *model.Player) (*model.Player, error) {
+	_, err := pr.tbl.InsertOne(ctx, player)
 	if err != nil {
 		return nil, err
 	}
 	return player, nil
 }
 
-func (vr *playerRepository) Update(ctx context.Context, player *model.Player) (*model.Player, error) {
-	_, err := vr.tbl.UpdateByID(ctx, player.ID, player)
+func (pr *playerRepository) Update(ctx context.Context, player *model.Player) (*model.Player, error) {
+	_, err := pr.tbl.UpdateByID(ctx, player.ID, player)
 	if err != nil {
 		return nil, err
 	}
 	return player, nil
 }
 
-func (vr *playerRepository) Delete(ctx context.Context, id string) error {
-	_, err := vr.tbl.DeleteOne(ctx, bson.M{"id": id})
+func (pr *playerRepository) Delete(ctx context.Context, id string) error {
+	_, err := pr.tbl.DeleteOne(ctx, bson.M{"id": id})
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (vr *playerRepository) FindByID(ctx context.Context, id string) (*model.Player, error) {
+func (pr *playerRepository) FindByID(ctx context.Context, id string) (*model.Player, error) {
 	var player model.Player
-	log.Println("id", id)
-	err := vr.tbl.FindOne(ctx, bson.M{"id": id}).Decode(&player)
+	err := pr.tbl.FindOne(ctx, bson.M{"id": id}).Decode(&player)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, nil
@@ -59,9 +58,52 @@ func (vr *playerRepository) FindByID(ctx context.Context, id string) (*model.Pla
 	return &player, nil
 }
 
-func (vr *playerRepository) FindAll(ctx context.Context) ([]*model.Player, error) {
+func (pr *playerRepository) FindByIdWithVideos(ctx context.Context, playerId string, limit, offset int, sortKey string, orderBy model.OrderBy) ([]*model.PlayerWithVideos, error) {
+	// 検索条件
+	var matchStage = bson.D{{
+		Key: "$match", Value: bson.D{{
+			Key: "id", Value: playerId,
+		}},
+	}}
+	// JOIN句
+	lookupStage := bson.D{{
+		Key: "$lookup", Value: bson.D{
+			// JOIN先のコレクション名
+			{Key: "from", Value: "videos"},
+			// JOIN元のコレクションのフィールド名
+			{Key: "localField", Value: "id"},
+			// JOIN先のコレクションのフィールド名
+			{Key: "foreignField", Value: "playerId"},
+			// JOINする対象の条件と並び順
+			{Key: "pipeline", Value: bson.A{
+				bson.D{{Key: "$sort", Value: bson.D{{
+					Key: sortKey, Value: orderBy.Int()},
+				}}},
+				bson.D{{Key: "$skip", Value: offset}},
+				bson.D{{Key: "$limit", Value: limit}},
+			}},
+			// JOIN結果のフィールド名
+			{Key: "as", Value: "videos"},
+		}},
+	}
+	cur, err := pr.tbl.Aggregate(ctx, mongo.Pipeline{matchStage, lookupStage})
+	if err != nil {
+		return nil, err
+	}
+	for cur.Next(ctx) {
+		log.Println(cur.Current.String())
+		break
+	}
+	var playerVideos []*model.PlayerWithVideos
+	if err = cur.All(ctx, &playerVideos); err != nil {
+		return nil, err
+	}
+	return playerVideos, nil
+}
+
+func (pr *playerRepository) FindAll(ctx context.Context) ([]*model.Player, error) {
 	var players []*model.Player
-	cur, err := vr.tbl.Find(ctx, bson.M{})
+	cur, err := pr.tbl.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}

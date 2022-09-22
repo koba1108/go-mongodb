@@ -12,9 +12,16 @@ var (
 )
 
 type Player struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	OfficialSiteUrl string `json:"officialSiteUrl"`
+	ID              string `json:"id" bson:"id"`
+	Name            string `json:"name" bson:"name"`
+	OfficialSiteUrl string `json:"officialSiteUrl" bson:"officialSiteUrl"`
+}
+
+type PlayerWithVideos struct {
+	ID              string   `json:"id" bson:"id"`
+	Name            string   `json:"name" bson:"name"`
+	OfficialSiteUrl string   `json:"officialSiteUrl" bson:"officialSiteUrl"`
+	Videos          []*Video `json:"videos" bson:"videos"`
 }
 
 func NewPlayer(name, officialSiteUrl string) (*Player, error) {
