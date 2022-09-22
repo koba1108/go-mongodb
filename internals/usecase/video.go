@@ -10,7 +10,7 @@ import (
 
 type VideoUsecase interface {
 	FindByID(ctx context.Context, id string) (*model.Video, error)
-	FindAll(ctx context.Context) ([]*model.Video, error)
+	FindAll(ctx context.Context, keyword string) ([]*model.Video, error)
 	Create(ctx context.Context, playerId, externalId, name, description, uploadDateStr, url string) (*model.Video, error)
 	Update(ctx context.Context, id string, playerId, externalId, name, description, uploadDateStr, url *string) (*model.Video, error)
 	Delete(ctx context.Context, id string) error
@@ -32,8 +32,8 @@ func (vu *videoUsecase) FindByID(ctx context.Context, id string) (*model.Video, 
 	return vu.videoRepository.FindByID(ctx, id)
 }
 
-func (vu *videoUsecase) FindAll(ctx context.Context) ([]*model.Video, error) {
-	return vu.videoRepository.FindAll(ctx)
+func (vu *videoUsecase) FindAll(ctx context.Context, keyword string) ([]*model.Video, error) {
+	return vu.videoRepository.FindAll(ctx, keyword)
 }
 
 func (vu *videoUsecase) Create(ctx context.Context, playerId, externalId, name, description, uploadDateStr, url string) (*model.Video, error) {

@@ -57,18 +57,31 @@ func (vr *videoRepository) FindByID(ctx context.Context, id string) (*model.Vide
 	return &video, nil
 }
 
-func (vr *videoRepository) FindAll(ctx context.Context) ([]*model.Video, error) {
-	var videos []*model.Video
-	cur, err := vr.tbl.Find(ctx, bson.M{})
-	if err != nil {
-		return nil, err
-	}
-	for cur.Next(ctx) {
-		var video model.Video
-		if err = cur.Decode(&video); err != nil {
+func (vr *videoRepository) FindAll(ctx context.Context, keyword string) ([]*model.Video, error) {
+	var opt bson.D
+	var cur *mongo.Cursor
+	var err error
+	if keyword != "" {
+		opt = bson.D{{
+			Key: "$search", Value: bson.D{
+				{Key: "index", Value: "full-text-index"},
+				{Key: "text", Value: bson.D{
+					{Key: "query", Value: keyword},
+					{Key: "path", Value: bson.A{"title", "description"}},
+				}},
+			},
+		}}
+		if cur, err = vr.tbl.Aggregate(ctx, mongo.Pipeline{opt}); err != nil {
 			return nil, err
 		}
-		videos = append(videos, &video)
+	} else {
+		if cur, err = vr.tbl.Find(ctx, bson.M{}); err != nil {
+			return nil, err
+		}
+	}
+	var videos []*model.Video
+	if err = cur.All(ctx, &videos); err != nil {
+		return nil, err
 	}
 	return videos, nil
 }
